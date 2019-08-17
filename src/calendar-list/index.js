@@ -47,7 +47,9 @@ class CalendarList extends Component {
     /** Style for the List item (the calendar) */
     calendarStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]),
     /** Whether to use static header that will not scroll with the list (horizontal only) */
-    staticHeader: PropTypes.bool
+    staticHeader: PropTypes.bool,
+    /** Wrapper for the List item (the calendar) */
+    calendarWrapper: PropTypes.func
   }
 
   static defaultProps = {
@@ -203,16 +205,19 @@ class CalendarList extends Component {
   }
 
   renderCalendar({item}) {
-    return (
+    let calendar = (
       <CalendarListItem
         scrollToMonth={this.scrollToMonth.bind(this)}
-        item={item} 
-        calendarHeight={this.props.calendarHeight} 
-        calendarWidth={this.props.horizontal ? this.props.calendarWidth : undefined} 
-        {...this.props} 
+        item={item}
+        calendarHeight={this.props.calendarHeight}
+        calendarWidth={this.props.horizontal ? this.props.calendarWidth : undefined}
+        {...this.props}
         style={this.props.calendarStyle}
       />
     );
+    let wrapper = this.props.calendarWrapper;
+
+    return (wrapper == null) ? calendar : wrapper(calendar);
   }
 
   getItemLayout(data, index) {
@@ -286,7 +291,7 @@ class CalendarList extends Component {
 
   render() {
     return (
-      <View>
+      <View style={{ flex: 1 }}>
         <FlatList
           onLayout={this.onLayout}
           ref={(c) => this.listView = c}
