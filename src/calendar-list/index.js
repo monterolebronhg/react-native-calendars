@@ -49,7 +49,11 @@ class CalendarList extends Component {
     /** Whether to use static header that will not scroll with the list (horizontal only) */
     staticHeader: PropTypes.bool,
     /** Wrapper for the List item (the calendar) */
-    calendarWrapper: PropTypes.func
+    calendarWrapper: PropTypes.func,
+    /** Enable or disable scroll snapping. Default = false */
+    enableSnap: PropTypes.bool,
+    /** Determines how quickly the scroll view decelerates after the user lifts their finger */
+    decelerationRate: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   }
 
   static defaultProps = {
@@ -61,7 +65,9 @@ class CalendarList extends Component {
     showScrollIndicator: false,
     scrollEnabled: true,
     scrollsToTop: false,
-    removeClippedSubviews: Platform.OS === 'android' ? false : true
+    removeClippedSubviews: Platform.OS === 'android' ? false : true,
+    enableSnap: false,
+    decelerationRate: 'normal'
   }
 
   constructor(props) {
@@ -299,8 +305,8 @@ class CalendarList extends Component {
           style={[this.style.container, this.props.style]}
           initialListSize={this.props.pastScrollRange + this.props.futureScrollRange + 1}
           data={this.state.rows}
-          //snapToAlignment='start'
-          //snapToInterval={this.calendarHeight}
+          snapToAlignment={this.props.enableSnap ? 'center' : null}
+          snapToInterval={this.props.enableSnap ? (this.props.horizontal ? this.props.calendarWidth : this.props.calendarHeight) : null}
           removeClippedSubviews={this.props.removeClippedSubviews}
           pageSize={1}
           horizontal={this.props.horizontal}
@@ -315,6 +321,7 @@ class CalendarList extends Component {
           initialScrollIndex={this.state.openDate ? this.getMonthIndex(this.state.openDate) : false}
           getItemLayout={this.getItemLayout}
           scrollsToTop={this.props.scrollsToTop}
+          decelerationRate={this.props.decelerationRate}
         />
         {this.renderStaticHeader()}
       </View>
